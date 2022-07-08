@@ -19,6 +19,20 @@ variable "project_id" {
   type = string
 }
 
+
+#creating subnet to acheive 2 network interface.
+resource "google_compute_network" "vpc_network" {
+  name = "network"
+  auto_create_subnetworks = false
+}
+resource "google_compute_subnetwork" "subnetwork" {
+  name          = "subnetwork"
+  ip_cidr_range = "10.2.0.0/16"
+  region        = "us-east1"
+  network       = google_compute_network.vpc_network.name
+  }
+
+
 #creating 2 SLES 12 instance with two 2 Network interface
 resource "google_compute_instance" "sles12" {
   count = "2"
@@ -35,7 +49,7 @@ resource "google_compute_instance" "sles12" {
 
   network_interface {
     subnetwork   = "default"
-    access_config {
+    access_config {  # this won't assign any external ip's to instance
     }
   }
  network_interface {
